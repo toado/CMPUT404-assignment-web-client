@@ -90,10 +90,12 @@ class HTTPClient(object):
     def GET(self, url, args=None):
         host, port, path = self.get_host_port_path(url)
         self.connect(host, port)
+
         request_header = (f"GET {path} HTTP/1.1\r\n"
                           f"Host: {host}\r\n"
                           f"Connection: close\r\n\r\n")
         self.sendall(request_header)
+        
         data = self.recvall(self.socket)
         self.close()
 
