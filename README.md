@@ -21,5 +21,6 @@ compatible) http://docs.python.org/2/library/socketserver.html
 Sources
 ========================
 
-Source 1
-* Description
+https://docs.python.org/3/library/urllib.parse.html
+* For understanding how urllib.parse works
+
