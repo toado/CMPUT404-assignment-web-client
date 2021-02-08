@@ -91,20 +91,39 @@ class HTTPClient(object):
         host, port, path = self.get_host_port_path(url)
         self.connect(host, port)
 
-        request_header = (f"GET {path} HTTP/1.1\r\n"
-                          f"Host: {host}\r\n"
-                          f"Connection: close\r\n\r\n")
+        request_header = (
+            f"GET {path} HTTP/1.1\r\n"
+            f"Host: {host}\r\n"
+            f"Connection: close\r\n\r\n"
+        )
         self.sendall(request_header)
-        
+
         data = self.recvall(self.socket)
         self.close()
 
         return HTTPResponse(self.get_code(data), self.get_body(data))
 
     def POST(self, url, args=None):
-        code = 500
-        body = ""
-        return HTTPResponse(code, body)
+        host, port, path = self.get_host_port_path(url)
+        self.connect(host, port)
+
+        content = ""
+        if args:
+            content = urllib.parse.urlencode(args)
+
+        request_header = (
+            f"POST {path} HTTP/1.1\r\n"
+            f"Host: {host}\r\n"
+            f"Content-Length: {len(content)}\r\n"
+            f"Content-Type: application/x-www-form-urlencoded\r\n"
+            f"Connection: close\r\n\r\n"
+            f"{content}"
+        )   
+        self.sendall(request_header)
+        data = self.recvall(self.socket)
+        self.close()
+
+        return HTTPResponse(self.get_code(data), self.get_body(data))
 
     def command(self, url, command="GET", args=None):
         if (command == "POST"):
