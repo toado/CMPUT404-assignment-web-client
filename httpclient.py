@@ -97,7 +97,6 @@ class HTTPClient(object):
             f"Connection: close\r\n\r\n"
         )
         self.sendall(request_header)
-
         data = self.recvall(self.socket)
         self.close()
 
