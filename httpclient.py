@@ -34,6 +34,9 @@ class HTTPResponse(object):
 
 class HTTPClient(object):
 
+    def print_response(self, response):
+        print("\n" + "="*50  + "\n" + response + "="*50 +"\n")
+
     # NOTE: (SOURCE & USE CASE)
     # https://docs.python.org/3/library/urllib.parse.html
     # Parsing url for (host, port, path)
@@ -97,32 +100,34 @@ class HTTPClient(object):
             f"Connection: close\r\n\r\n"
         )
         self.sendall(request_header)
-        data = self.recvall(self.socket)
+        response = self.recvall(self.socket)
         self.close()
 
-        return HTTPResponse(self.get_code(data), self.get_body(data))
+        self.print_response(response)
+        return HTTPResponse(self.get_code(response), self.get_body(response))
 
     def POST(self, url, args=None):
         host, port, path = self.get_host_port_path(url)
         self.connect(host, port)
 
-        content = ""
+        body_parameters = ""
         if args:
-            content = urllib.parse.urlencode(args)
+            body_parameters = urllib.parse.urlencode(args)
 
         request_header = (
             f"POST {path} HTTP/1.1\r\n"
             f"Host: {host}\r\n"
-            f"Content-Length: {len(content)}\r\n"
+            f"Content-Length: {len(body_parameters)}\r\n"
             f"Content-Type: application/x-www-form-urlencoded\r\n"
             f"Connection: close\r\n\r\n"
-            f"{content}"
+            f"{body_parameters}"
         )   
         self.sendall(request_header)
-        data = self.recvall(self.socket)
+        response = self.recvall(self.socket)
         self.close()
 
-        return HTTPResponse(self.get_code(data), self.get_body(data))
+        self.print_response(response)
+        return HTTPResponse(self.get_code(response), self.get_body(response))
 
     def command(self, url, command="GET", args=None):
         if (command == "POST"):
